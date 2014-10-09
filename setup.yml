@@ -1,0 +1,8 @@
+- name: setup server
+  hosts: vps
+  sudo: yes
+  port: "{{ssh_port}}"
+  user: "{{login_user}}"
+  tasks:
+    - name: disable 22 port
+      ufw: port=22 state=disabled

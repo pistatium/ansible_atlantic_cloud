@@ -1,0 +1,46 @@
+- name: initialize vps setting
+  hosts: vps
+  port: 22
+  user: root
+  vars_prompt:
+    - name: user_password
+      prompt: "Enter login password"
+      private: yes
+
+  tasks:
+    - name: install ufw (for firewall)
+      apt: name=ufw state=present
+
+    - name: change SSH port
+      lineinfile: dest=/etc/ssh/sshd_config regexp="^#?Port" line="Port {{ ssh_port }}" state=present
+
+    - name: open ssh_port
+      ufw: rule=allow port={{ssh_port}} proto=tcp
+
+    - name: create wheel group
+      group: name=wheel
+
+    - name: create user
+      user: name={{ user_name }} password={{ user_password }} groups=wheel
+
+    - name: allow wheel users to sudo
+      lineinfile: dest=/etc/sudoers regexp="^%wheel ALL=(ALL)" line="%wheel ALL=(ALL) NOPASSWD:ALL" state=present
+
+    - name: enable sudo for tty
+      lineinfile: dest=/etc/sudoers
+              regexp='requiretty'
+              line='#Defaults    requiretty'
+              validate='visudo -cf %s'
+              state=present
+
+    - name: copy ssh key to server
+      authorized_key:
+            user={{ user_name }}
+            key="{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+
+    - name: restart ufw
+      service: name=ufw state=restarted
+
+    - name: restart ssh
+      service: name=ssh state=restarted
+     
