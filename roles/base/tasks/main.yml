@@ -1,0 +1,12 @@
+- name: upgrade repositories
+  apt: upgrade=dist update_cache=yes
+
+- name: set timezone
+  copy: content={{ timezone }}
+        dest=/etc/timezone
+        owner=root
+        group=root
+        mode=0644
+        backup=yes
+  notify:
+    - reload timezone

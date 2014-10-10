@@ -3,6 +3,15 @@
   sudo: yes
   port: "{{ssh_port}}"
   user: "{{login_user}}"
-  tasks:
+
+  pre_tasks:
     - name: disable 22 port
       ufw: port=22 state=disabled
+
+    - name: set user shell
+      user: name={{ login_user }} shell={{ default_shell }}
+
+  roles:
+    - base
+    - fail2ban
+

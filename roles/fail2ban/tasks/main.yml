@@ -1,0 +1,7 @@
+- name: install fail2ban
+  apt: name=fail2ban
+
+- name: copy default setting
+  template: src=jail.local.j2 dest=/etc/fail2ban/jail.local
+  notify: 
+    - reload fail2ban

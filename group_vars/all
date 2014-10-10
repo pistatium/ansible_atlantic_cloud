@@ -1,2 +1,5 @@
 login_user: admin
 ssh_port: 10022
+default_shell: /bin/bash
+timezone: Asia/Tokyo
+
